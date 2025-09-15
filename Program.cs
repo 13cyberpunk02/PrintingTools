@@ -1,14 +1,64 @@
+using Microsoft.EntityFrameworkCore;
+using PrintingTools.Extensions;
+using PrintingTools.Infrastructure.Data;
 using Scalar.AspNetCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Configuration.AddJsonFile("AppEnvironments.json", optional: true, reloadOnChange: true);
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularAppCors", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<PrintingDbContext>();
+    
+    try
+    {
+        Log.Information("Применяются миграции в бд...");
+        await context.Database.MigrateAsync();
+        
+        Log.Information("Загружаются изначальные данные...");
+        var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+        await seeder.SeedAsync();
+        
+        Log.Information("Инициализация базы данных успешно прошла.");
+    }
+    catch (Exception ex)
+    {
+        Log.Fatal(ex, "Произошла ошибка во время инициализации базы данных.");
+        throw;
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -20,30 +70,13 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseSerilogRequestLogging();
+
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.UseCors("AngularAppCors");
+app.UseAuthentication();
+app.UseAuthorization();
 
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
-
+Log.Information("Запускается приложение PrintingTools API...");
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
