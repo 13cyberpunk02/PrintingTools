@@ -1,0 +1,16 @@
+{
+  "DatabaseSettings": {
+    "ConnectionString": "Host=localhost;Port=5432;Database=printing_db;Username=cyber;Password=fallen1302;",
+    "EnableDetailedErrors": false,
+    "EnableSensitiveDataLogging": false,
+    "CommandTimeout": 30
+  },
+
+  "JwtSettings": {
+    "SecretKey": "YOUR-256-BIT-SECRET-KEY-CHANGE-THIS-IN-PRODUCTION-MINIMUM-32-CHARACTERS",
+    "Issuer": "PrintingApp",
+    "Audience": "PrintingApp",
+    "AccessTokenExpirationMinutes": 15,
+    "RefreshTokenExpirationDays": 7
+  }
+}
