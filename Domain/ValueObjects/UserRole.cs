@@ -1,6 +1,7 @@
 namespace PrintingTools.Domain.ValueObjects;
 
-public class UserRole
+public enum UserRole
 {
-    
+    User = 1,
+    Administrator = 2
 }

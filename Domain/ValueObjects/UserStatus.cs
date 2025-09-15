@@ -1,6 +1,9 @@
 namespace PrintingTools.Domain.ValueObjects;
 
-public class UserStatus
+public enum UserStatus
 {
-    
+    Active = 1,
+    Inactive = 2,
+    Blocked = 3,
+    PendingVerification = 4
 }
