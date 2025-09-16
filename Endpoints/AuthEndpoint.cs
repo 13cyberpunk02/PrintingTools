@@ -28,10 +28,28 @@ public static class AuthEndpoint
         
         group.MapPost("register", RegisterAsync)
             .WithName("Register")
+            .Produces<ApiResponse<LoginResponse>>()
+            .Produces<ApiResponse<LoginResponse>>(400)
             .WithRequestValidation<RegisterRequest>();
         
         group.MapPost("refresh-token", RefreshTokenAsync)
-            .WithName("Refresh-Token");
+            .WithName("Refresh-Token")
+            .Produces<ApiResponse<TokenResponse>>()
+            .Produces<ApiResponse<TokenResponse>>(400)
+            .WithRequestValidation<RefreshTokenRequest>();
+        
+        group.MapPost("logout", LogoutAsync)
+            .RequireAuthorization()
+            .WithName("Logout")
+            .Produces<ApiResponse<object>>(200)
+            .Produces(401);
+        
+        group.MapPost("change-password", ChangePasswordAsync)
+            .RequireAuthorization()
+            .WithName("ChangePassword")
+            .Produces<ApiResponse<object>>(200)
+            .Produces(401)
+            .WithRequestValidation<ChangePasswordRequest>();
         
         return group;
     }
@@ -63,5 +81,35 @@ public static class AuthEndpoint
         return response.Success 
             ? Results.Ok(response)
             : Results.BadRequest(response);
+    }
+
+    private static async Task<IResult> LogoutAsync(
+        HttpContext context,
+        [FromBody] string refreshToken,
+        IAuthService authService)
+    {
+        var userId = context.User.GetUserId();
+        if (userId == Guid.Empty)
+            return Results.Unauthorized();
+        var result = await authService.LogoutAsync(userId, refreshToken);
+        return result.Success 
+            ? Results.Ok(result) 
+            : Results.BadRequest(result);
+    }
+
+    private static async Task<IResult> ChangePasswordAsync(
+        [FromBody] ChangePasswordRequest request,
+        HttpContext context,
+        IAuthService authService,
+        CancellationToken cancellationToken = default)
+    {
+        var userId = context.User.GetUserId();
+        if (userId == Guid.Empty)
+            return Results.Unauthorized();
+
+        var result = await authService.ChangePasswordAsync(userId, request, cancellationToken);
+        return result.Success 
+            ? Results.Ok(result) 
+            : Results.BadRequest(result);
     }
 }

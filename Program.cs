@@ -30,7 +30,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddOpenApi();
+builder.Services.AddOpenApiExtension();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplicationServices();
 
