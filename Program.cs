@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PrintingTools.Extensions;
 using PrintingTools.Infrastructure.Data;
+using PrintingTools.Middleware;
 using Scalar.AspNetCore;
 using Serilog;
 
@@ -86,6 +87,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseCors("AngularAppCors");
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapAllEndpoints();
