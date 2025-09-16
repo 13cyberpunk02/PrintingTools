@@ -31,6 +31,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplicationServices();
 builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
 
