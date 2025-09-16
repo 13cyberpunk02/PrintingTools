@@ -1,12 +1,12 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Identity.Data;
+using PrintingTools.Application.DTOs.Auth;
 
 namespace PrintingTools.Application.Validators.Auth;
 
 public class LoginRequestValidator : AbstractValidator<LoginRequest>
 {
     public LoginRequestValidator()
-    {
+    { 
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email обязателен")
             .EmailAddress().WithMessage("Некорректный формат email")

@@ -1,10 +1,10 @@
+using System.Reflection;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using PrintingTools.Application.DTOs.Common;
 using PrintingTools.Application.Mappings;
 using PrintingTools.Application.Services;
-using PrintingTools.Application.Validators.Auth;
 
 namespace PrintingTools.Extensions;
 
@@ -22,8 +22,8 @@ public static class ApplicationServiceExtensions
         
         services.AddFluentValidationAutoValidation();
         services.AddFluentValidationClientsideAdapters();
-        services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
-
+        
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         services.Configure<ApiBehaviorOptions>(options =>
         {

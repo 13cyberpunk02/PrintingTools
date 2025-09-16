@@ -16,12 +16,12 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
-
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularAppCors", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("https://localhost:5443")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
@@ -32,7 +32,15 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplicationServices();
-builder.Services.AddAuthorization();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => 
+        policy.RequireRole("Administrator"));
+    
+    options.AddPolicy("UserOrAdmin", policy => 
+        policy.RequireRole("User", "Administrator"));
+});
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -75,9 +83,11 @@ app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
+
 app.UseCors("AngularAppCors");
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapAllEndpoints();
 Log.Information("Запускается приложение PrintingTools API...");
 app.Run();

@@ -39,7 +39,7 @@ public class AuthService : IAuthService
     public async Task<ApiResponse<LoginResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
          try
-         {
+         { 
             var user = await _unitOfWork.Users.GetByEmailWithTokensAsync(request.Email, cancellationToken);
             
             if (user == null)
