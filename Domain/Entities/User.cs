@@ -3,9 +3,9 @@ using PrintingTools.Domain.ValueObjects;
 
 namespace PrintingTools.Domain.Entities;
 
-public class User : BaseEntity
+public class User : BaseEntity, IAuditableEntity
 {
-    private readonly List<RefreshToken> _refreshTokens = new();
+   private readonly List<RefreshToken> _refreshTokens = [];
 
     public string Email { get; private set; }
     public string PasswordHash { get; private set; }
@@ -20,11 +20,14 @@ public class User : BaseEntity
     public string? EmailConfirmationToken { get; private set; }
     public string? PasswordResetToken { get; private set; }
     public DateTime? PasswordResetTokenExpires { get; private set; }
+    public string? CreatedBy { get; private set; }
+    public string? UpdatedBy { get; private set; }
     
+    // Навигационные свойства
     public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
-    
-    protected User() { }
-    
+
+    protected User() { } // Для EF Core
+
     public User(
         string email,
         string passwordHash,
@@ -42,7 +45,7 @@ public class User : BaseEntity
         Status = UserStatus.PendingVerification;
         GenerateEmailConfirmationToken();
     }
-    
+
     public void SetEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
@@ -54,7 +57,7 @@ public class User : BaseEntity
         Email = email.ToLowerInvariant();
         UpdatedAt = DateTime.UtcNow;
     }
-    
+
     public void SetName(string firstName, string lastName, string? middleName = null)
     {
         if (string.IsNullOrWhiteSpace(firstName))
@@ -195,10 +198,15 @@ public class User : BaseEntity
         return $"{LastName} {FirstName[0]}.{middleInitial}";
     }
 
+    // Бизнес-правила
     public bool IsAdmin() => Role == UserRole.Administrator;
     
     public bool CanPrint() => Status == UserStatus.Active && EmailConfirmedAt != null;
     
     public bool CanEditProfile(Guid targetUserId) => 
         Id == targetUserId || Role == UserRole.Administrator;
+    
+    public bool CanManageUsers() => Role == UserRole.Administrator;
+    
+    public bool CanManagePrinters() => Role == UserRole.Administrator;
 }

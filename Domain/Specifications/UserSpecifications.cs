@@ -29,10 +29,26 @@ public static class UserSpecifications
         return user => user.Role == UserRole.Administrator;
     }
 
+    public static Expression<Func<User, bool>> RegularUsers()
+    {
+        return user => user.Role == UserRole.User;
+    }
+
     public static Expression<Func<User, bool>> CanLogin()
     {
         return user => (user.Status == UserStatus.Active || 
                         user.Status == UserStatus.PendingVerification) &&
                        !user.IsDeleted;
+    }
+
+    public static Expression<Func<User, bool>> NeedsEmailConfirmation()
+    {
+        return user => user.Status == UserStatus.PendingVerification && 
+                       user.EmailConfirmedAt == null;
+    }
+
+    public static Expression<Func<User, bool>> Blocked()
+    {
+        return user => user.Status == UserStatus.Blocked;
     }
 }

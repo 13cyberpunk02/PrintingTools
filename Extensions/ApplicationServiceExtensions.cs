@@ -17,8 +17,6 @@ public static class ApplicationServiceExtensions
         
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IPrintService, PrintService>();
-        
         
         services.AddFluentValidationAutoValidation();
         services.AddFluentValidationClientsideAdapters();

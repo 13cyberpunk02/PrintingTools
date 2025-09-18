@@ -50,10 +50,6 @@ public class PrintJobConfiguration : IEntityTypeConfiguration<PrintJob>
             .HasMaxLength(50)
             .IsRequired();
 
-        builder.Property(p => p.PrinterName)
-            .HasColumnName("printer_name")
-            .HasMaxLength(200);
-
         builder.Property(p => p.StartedAt)
             .HasColumnName("started_at");
 
@@ -63,10 +59,6 @@ public class PrintJobConfiguration : IEntityTypeConfiguration<PrintJob>
         builder.Property(p => p.ErrorMessage)
             .HasColumnName("error_message")
             .HasMaxLength(1000);
-
-        builder.Property(p => p.Cost)
-            .HasColumnName("cost")
-            .HasColumnType("decimal(10,2)");
 
         builder.Property(p => p.CreatedAt)
             .HasColumnName("created_at")
