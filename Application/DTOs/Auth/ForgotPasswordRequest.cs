@@ -1,3 +1,6 @@
 namespace PrintingTools.Application.DTOs.Auth;
 
-public record ForgotPasswordRequest(string Email);
+public class ForgotPasswordRequest
+{
+    public string Email { get; set; } = string.Empty;
+}

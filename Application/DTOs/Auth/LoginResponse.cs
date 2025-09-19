@@ -2,4 +2,8 @@ using PrintingTools.Application.DTOs.Users;
 
 namespace PrintingTools.Application.DTOs.Auth;
 
-public record LoginResponse(TokenResponse Tokens, UserDto User);
+public class LoginResponse
+{
+    public TokenResponse Tokens { get; set; } = null!;
+    public UserDto User { get; set; } = null!;
+}

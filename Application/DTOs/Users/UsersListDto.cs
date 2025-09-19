@@ -1,10 +1,7 @@
+using PrintingTools.Application.DTOs.Common;
+
 namespace PrintingTools.Application.DTOs.Users;
 
-public class UsersListDto
+public class UsersListDto : PagedResponse<UserDto>
 {
-    public List<UserDto> Users { get; set; } = new();
-    public int TotalCount { get; set; }
-    public int PageNumber { get; set; }
-    public int PageSize { get; set; }
-    public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
 }

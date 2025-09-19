@@ -41,15 +41,12 @@ public class UserService : IUserService
             
             // Добавляем статистику по заданиям печати
             var userJobs = await _unitOfWork.PrintJobs.GetByUserIdAsync(userId);
+            var printJobs = userJobs.ToList();
+            profile.TotalPrintJobs = printJobs.Count;
+            profile.ActivePrintJobs = printJobs.Count(j => 
+                j.Status is PrintStatus.Pending or PrintStatus.InProgress);
 
-            var response = profile with
-            {
-                TotalPrintJobs = userJobs.Count(),
-                ActivePrintJobs = userJobs.Count(j =>
-                    j.Status is PrintStatus.Pending or PrintStatus.InProgress)
-            };
-
-            return ApiResponse<UserProfileDto>.Ok(response);
+            return ApiResponse<UserProfileDto>.Ok(profile);
         }
         catch (Exception ex)
         {
@@ -309,7 +306,7 @@ public class UserService : IUserService
                 return ApiResponse<object>.Fail("Пользователь не найден");
             }
             
-            var activeJobs = await _unitOfWork.PrintJobs.GetByUserIdAsync(userId, cancellationToken);
+            var activeJobs = await _unitOfWork.PrintJobs.GetByUserIdAsync(userId, 10, cancellationToken);
             if (activeJobs.Any(j => j.Status is PrintStatus.Pending or PrintStatus.InProgress))
             {
                 return ApiResponse<object>.Fail("Невозможно удалить пользователя с активными заданиями печати");

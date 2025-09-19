@@ -20,4 +20,6 @@ public class PagedRequest
     public string? SortBy { get; set; }
     public bool SortDescending { get; set; } = true;
     public string? SearchTerm { get; set; }
+    
+    public int Skip => (PageNumber - 1) * PageSize;
 }

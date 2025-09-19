@@ -19,6 +19,9 @@ public class PrintJobConfiguration : IEntityTypeConfiguration<PrintJob>
             .HasColumnName("user_id")
             .IsRequired();
 
+        builder.Property(p => p.PrinterId)
+            .HasColumnName("printer_id");
+
         builder.Property(p => p.FileName)
             .HasColumnName("file_name")
             .HasMaxLength(500)
@@ -33,6 +36,11 @@ public class PrintJobConfiguration : IEntityTypeConfiguration<PrintJob>
             .HasColumnName("file_size_bytes")
             .IsRequired();
 
+        builder.Property(p => p.FileType)
+            .HasColumnName("file_type")
+            .HasMaxLength(10)
+            .IsRequired();
+
         builder.Property(p => p.Format)
             .HasColumnName("format")
             .HasConversion<string>()
@@ -44,11 +52,41 @@ public class PrintJobConfiguration : IEntityTypeConfiguration<PrintJob>
             .HasDefaultValue(1)
             .IsRequired();
 
+        builder.Property(p => p.IsColor)
+            .HasColumnName("is_color")
+            .HasDefaultValue(true)
+            .IsRequired();
+
+        builder.Property(p => p.IsDuplex)
+            .HasColumnName("is_duplex")
+            .HasDefaultValue(false)
+            .IsRequired();
+
+        builder.Property(p => p.Quality)
+            .HasColumnName("quality")
+            .HasConversion<string>()
+            .HasMaxLength(50)
+            .IsRequired();
+
         builder.Property(p => p.Status)
             .HasColumnName("status")
             .HasConversion<string>()
             .HasMaxLength(50)
             .IsRequired();
+
+        builder.Property(p => p.Priority)
+            .HasColumnName("priority")
+            .HasDefaultValue(5)
+            .IsRequired();
+
+        builder.Property(p => p.TotalPages)
+            .HasColumnName("total_pages");
+
+        builder.Property(p => p.PrintedPages)
+            .HasColumnName("printed_pages");
+
+        builder.Property(p => p.QueuedAt)
+            .HasColumnName("queued_at");
 
         builder.Property(p => p.StartedAt)
             .HasColumnName("started_at");
@@ -59,6 +97,10 @@ public class PrintJobConfiguration : IEntityTypeConfiguration<PrintJob>
         builder.Property(p => p.ErrorMessage)
             .HasColumnName("error_message")
             .HasMaxLength(1000);
+
+        builder.Property(p => p.SpoolJobId)
+            .HasColumnName("spool_job_id")
+            .HasMaxLength(100);
 
         builder.Property(p => p.CreatedAt)
             .HasColumnName("created_at")
@@ -71,9 +113,12 @@ public class PrintJobConfiguration : IEntityTypeConfiguration<PrintJob>
             .HasColumnName("is_deleted")
             .HasDefaultValue(false)
             .IsRequired();
-
+        
         builder.HasIndex(p => p.UserId)
             .HasDatabaseName("ix_print_jobs_user_id");
+
+        builder.HasIndex(p => p.PrinterId)
+            .HasDatabaseName("ix_print_jobs_printer_id");
 
         builder.HasIndex(p => p.Status)
             .HasDatabaseName("ix_print_jobs_status");
@@ -84,9 +129,20 @@ public class PrintJobConfiguration : IEntityTypeConfiguration<PrintJob>
         builder.HasIndex(p => new { p.UserId, p.Status })
             .HasDatabaseName("ix_print_jobs_user_status");
 
+        builder.HasIndex(p => new { p.Status, p.Priority, p.CreatedAt })
+            .HasDatabaseName("ix_print_jobs_queue_order");
+
+        builder.HasIndex(p => p.SpoolJobId)
+            .HasDatabaseName("ix_print_jobs_spool_id");
+
         builder.HasOne(p => p.User)
             .WithMany()
             .HasForeignKey(p => p.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(p => p.Printer)
+            .WithMany()
+            .HasForeignKey(p => p.PrinterId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

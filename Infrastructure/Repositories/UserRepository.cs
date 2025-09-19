@@ -49,4 +49,14 @@ public class UserRepository : Repository<User>, IUserRepository
         => await _dbSet
             .Include(u => u.RefreshTokens)
             .FirstOrDefaultAsync(u => u.Id == id);
+    
+    public async Task<User?> GetByEmailConfirmationTokenAsync(string token, CancellationToken cancellationToken = default)
+        => await _dbSet.FirstOrDefaultAsync(u => u.EmailConfirmationToken == token, cancellationToken);
+
+    public async Task<IEnumerable<User>> GetActiveUsersAsync(CancellationToken cancellationToken = default)
+        => await _dbSet.AsNoTracking()
+            .Where(u => u.Status == UserStatus.Active && u.EmailConfirmedAt != null)
+            .OrderBy(u => u.LastName)
+            .ThenBy(u => u.FirstName)
+            .ToListAsync(cancellationToken);
 }

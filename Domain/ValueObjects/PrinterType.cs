@@ -2,9 +2,9 @@
 
 public enum PrinterType
 {
-    Laser = 1,      // Лазерный принтер
-    Inkjet = 2,     // Струйный принтер
-    Plotter = 3,    // Плоттер (для больших форматов)
-    Thermal = 4,    // Термопринтер
-    Virtual = 5     // Виртуальный (PDF) принтер
+    Laser = 1,
+    Inkjet = 2,
+    Plotter = 3,
+    Thermal = 4,
+    Virtual = 5 // PDF printer
 }

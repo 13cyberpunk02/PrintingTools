@@ -5,7 +5,8 @@ namespace PrintingTools.Domain.Entities;
 
 public class Printer : BaseEntity
 {
-    private readonly List<string> _supportedFormats = [];
+     private readonly List<string> _supportedFormats = new();
+
     public string Name { get; private set; }
     public string Model { get; private set; }
     public string Location { get; private set; }

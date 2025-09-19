@@ -8,7 +8,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-         builder.ToTable("users");
+        builder.ToTable("users");
         
         builder.HasKey(u => u.Id);
         builder.Property(u => u.Id)
@@ -84,6 +84,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasDefaultValue(false)
             .IsRequired();
 
+        builder.Property(u => u.CreatedBy)
+            .HasColumnName("created_by")
+            .HasMaxLength(256);
+
+        builder.Property(u => u.UpdatedBy)
+            .HasColumnName("updated_by")
+            .HasMaxLength(256);
+        
         builder.HasIndex(u => u.Email)
             .IsUnique()
             .HasDatabaseName("ix_users_email");
@@ -93,6 +101,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasIndex(u => u.Status)
             .HasDatabaseName("ix_users_status");
+
+        builder.HasIndex(u => new { u.Email, u.IsDeleted })
+            .HasDatabaseName("ix_users_email_deleted");
         
         builder.OwnsMany(u => u.RefreshTokens, rt =>
         {

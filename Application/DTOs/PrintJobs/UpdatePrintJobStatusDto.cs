@@ -1,3 +1,8 @@
 namespace PrintingTools.Application.DTOs.PrintJobs;
 
-public record UpdatePrintJobStatusDto(string Status, string? PrinterName, string? ErrorMessage, decimal? Cost);
+public class UpdatePrintJobStatusDto
+{
+    public string Status { get; set; } = string.Empty;
+    public string? PrinterName { get; set; }
+    public string? ErrorMessage { get; set; }
+}

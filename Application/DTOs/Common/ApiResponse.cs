@@ -27,4 +27,14 @@ public class ApiResponse<T>
             Errors = errors ?? []
         };
     }
+
+    public static ApiResponse<T> Fail(string message, string error)
+    {
+        return new ApiResponse<T>
+        {
+            Success = false,
+            Message = message,
+            Errors = [error]
+        };
+    }
 }

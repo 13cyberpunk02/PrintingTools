@@ -94,5 +94,11 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapAllEndpoints();
-Log.Information("Запускается приложение PrintingTools API...");
+
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
+    .WithTags("Health")
+    .WithName("HealthCheck")
+    .AllowAnonymous();
+
+Log.Information("Запускается приложение Printing Tools API...");
 app.Run();

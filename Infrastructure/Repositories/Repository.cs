@@ -43,4 +43,7 @@ public class Repository<T>  : IRepository<T> where T : BaseEntity
     
     public virtual async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
         => await _dbSet.AnyAsync(predicate, cancellationToken);
+    
+    public virtual IQueryable<T> Query() => _dbSet.AsQueryable();
+    
 }

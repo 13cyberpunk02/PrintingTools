@@ -5,7 +5,7 @@ namespace PrintingTools.Domain.Entities;
 
 public class PrintJob : BaseEntity
 {
-     public Guid UserId { get; private set; }
+    public Guid UserId { get; private set; }
     public Guid? PrinterId { get; private set; }
     public string FileName { get; private set; }
     public string FilePath { get; private set; }

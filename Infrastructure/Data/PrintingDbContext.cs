@@ -8,22 +8,26 @@ public class PrintingDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<PrintJob> PrintJobs { get; set; }
-    
-    public PrintingDbContext(DbContextOptions<PrintingDbContext> options) : base(options)
+    public DbSet<Printer> Printers { get; set; }
+
+    public PrintingDbContext(DbContextOptions<PrintingDbContext> options)
+        : base(options)
     {
-        
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
+        
+        // Применяем все конфигурации из текущей сборки
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         
+        // Глобальный фильтр для soft delete
         modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
-        modelBuilder.Entity<PrintJob>().HasQueryFilter(pj => !pj.IsDeleted);
+        modelBuilder.Entity<PrintJob>().HasQueryFilter(p => !p.IsDeleted);
+        modelBuilder.Entity<Printer>().HasQueryFilter(pr => !pr.IsDeleted);
     }
-    
+
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         UpdateTimestamps();
@@ -35,11 +39,12 @@ public class PrintingDbContext : DbContext
         UpdateTimestamps();
         return base.SaveChanges();
     }
-    
+
     private void UpdateTimestamps()
     {
         var entries = ChangeTracker.Entries()
-            .Where(e => e is { Entity: Domain.Common.BaseEntity, State: EntityState.Added or EntityState.Modified });
+            .Where(e => e.Entity is Domain.Common.BaseEntity && 
+                        (e.State == EntityState.Added || e.State == EntityState.Modified));
 
         foreach (var entry in entries)
         {

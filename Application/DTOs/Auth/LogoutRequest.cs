@@ -1,7 +1,6 @@
 namespace PrintingTools.Application.DTOs.Auth;
 
-public class RefreshTokenRequest
+public class LogoutRequest
 {
-    public string AccessToken { get; set; } = string.Empty;
     public string RefreshToken { get; set; } = string.Empty;
 }

@@ -1,10 +1,10 @@
 namespace PrintingTools.Application.DTOs.PrintJobs;
 
-public class DailyStatistics
+public class PrinterStatistics
 {
-    public DateTime Date { get; set; }
+    public string PrinterName { get; set; } = string.Empty;
     public int JobCount { get; set; }
     public int CompletedCount { get; set; }
-    public int FailedCount { get; set; }
     public long PagesCount { get; set; }
+    public double SuccessRate { get; set; }
 }
