@@ -65,3 +65,40 @@ flowchart TD
     A --> Settings
     A --> Properties
 ```
+Связи
+```mermaid
+flowchart TD
+    Endpoints -.-> Application
+    Application -.-> Domain
+    Application --> Infrastructure
+    Infrastructure ---> Domain
+    Endpoints --> Common
+    Endpoints --> Extensions
+    Endpoints --> Middleware
+    Application --> Common
+    Application --> Extensions
+    Application --> Helpers
+    Application --> Middleware
+    Infrastructure --> Helpers
+    Infrastructure --> Extensions
+    Infrastructure --> Common
+    Domain --> Common
+    Domain --> Exceptions
+    Domain --> ValueObjects
+    Domain --> Specifications
+    Application --> Settings
+    Infrastructure --> Settings
+    Endpoints --> Settings
+
+    subgraph Layer
+        Endpoints
+        Application
+        Domain
+        Infrastructure
+        Common
+        Extensions
+        Helpers
+        Middleware
+        Settings
+    end
+```
